@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prédictions Ligue 1</title>
+<style>
+:root{--bg:#f3f5f1;--c:#fff;--t:#16211a;--m:#5d6b62;--l:#dde3dc;--h:#1f7a4d;--n:#9aa59d;--a:#2b5fa8}
+@media(prefers-color-scheme:dark){:root{--bg:#101611;--c:#19221b;--t:#eef3ee;--m:#9aa89e;--l:#2a362d;--h:#3fbf80;--n:#6f7c73;--a:#6b9be0}}
+body{margin:0;background:var(--bg);color:var(--t);font-family:system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 14px 32px}
+h1{font-size:1.5rem;margin:0 0 4px}
+.s,footer,h2,#msg{color:var(--m);font-size:.9rem}
+h2{font-weight:600;margin:20px 0 8px}
+.m{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.t{display:flex;justify-content:space-between;font-weight:700}
+.b{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:10px 0 6px;gap:2px}
+.p{display:flex;justify-content:space-between;font-size:.85rem;color:var(--m)}
+.p b{color:var(--t)}
+</style></head><body><main>
+<h1>Prédictions Ligue 1</h1>
+<p class="s">Estimations calculées par un modèle statistique, pas des certitudes.</p>
+<p id="msg">Chargement… la première ouverture peut prendre une minute.</p>
+<div id="liste"></div>
+<footer>1 = victoire domicile · N = nul · 2 = victoire extérieur</footer>
+</main>
+<script>
+fetch("/predictions").then(r=>r.json()).then(data=>{
+const box=document.getElementById("liste"),msg=document.getElementById("msg");
+if(!data.length){msg.textContent="Aucun match à afficher pour le moment.";return}
+msg.remove();let last="";
+data.forEach(m=>{
+if(m.date!==last){last=m.date;const h=document.createElement("h2");
+h.textContent=new Date(m.date+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});box.appendChild(h)}
+const mx=Math.max(m.p1,m.pn,m.p2),w=v=>v===mx?"font-weight:700;color:var(--t)":"";
+const d=document.createElement("div");d.className="m";
+d.innerHTML=`<div class="t"><span>${m.dom}</span><span>${m.ext}</span></div>
+<div class="b"><i style="background:var(--h);width:${m.p1}%"></i><i style="background:var(--n);width:${m.pn}%"></i><i style="background:var(--a);width:${m.p2}%"></i></div>
+<div class="p"><span style="${w(m.p1)}">1 : <b>${m.p1}%</b></span><span style="${w(m.pn)}">N : <b>${m.pn}%</b></span><span style="${w(m.p2)}">2 : <b>${m.p2}%</b></span></div>`;
+box.appendChild(d)})
+}).catch(()=>{document.getElementById("msg").textContent="Erreur de chargement. Recharge la page."});
+</script></body></html>
