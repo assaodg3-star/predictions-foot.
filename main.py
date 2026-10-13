@@ -1,6 +1,7 @@
 import os, time, requests
 import pandas as pd
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from scipy.stats import poisson
 
@@ -59,7 +60,7 @@ def calculer():
 
 @app.get("/")
 def accueil():
-    return {"statut": "ok"}
+    return FileResponse("index.html")
 
 @app.get("/predictions")
 def predictions():
